@@ -1,14 +1,18 @@
 import { useState } from 'react'
-import { useTypedDispatch, actionCreators } from '../state'
+import { useTypedSelector } from '../state'
+import { useActions } from '../hooks/useActions'
 
 const RepositoriesList: React.FC = () => {
   const [term, setTerm] = useState('')
-  const dispatch = useTypedDispatch()
+  const { searchRepositories } = useActions()
+  const { data, error, loading } = useTypedSelector(
+    (state) => state.repositories
+  )
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    dispatch(actionCreators.searchRepositories(term))
+    searchRepositories(term)
   }
 
   return (
@@ -21,6 +25,9 @@ const RepositoriesList: React.FC = () => {
         />
         <button>Search</button>
       </form>
+      {error && <h3>{error}</h3>}
+      {loading && <h3>Loading...</h3>}
+      {!error && !loading && data.map((name) => <div key={name}>{name}</div>)}
     </div>
   )
 }
